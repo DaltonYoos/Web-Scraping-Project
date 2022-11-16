@@ -19,9 +19,92 @@ url = 'https://www.worldometers.info/coronavirus/country/us'
 # Request in case 404 Forbidden error
 headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.3'}
 
+req = Request(url, headers=headers)		
+
+webpage = urlopen(req).read()
+
+soup = BeautifulSoup(webpage, 'html.parser')
+
+table_rows = soup.findAll("tr")
+
+state_worst_death = ''
+state_best_death = ''
+high_death_ratio = 0.0
+low_death_ratio = 100.0
+
+state_best_test = ''
+state_worst_test = ''
+high_test_ratio = 0.0
+low_test_ratio = 100.0
 
 
 
+for row in table_rows[2:52]:
+
+    td = row.findAll("td")
+    
+    state = td[1].text
+
+    total_cases = int(td[2].text.replace(",",""))
+    
+    total_deaths = int(td[4].text.replace(",",""))
+    total_tests = int(td[10].text.replace(",",""))
+    population = int(td[12].text.replace(",",""))
+
+    death_rate = (total_deaths/total_cases) * 100
+    test_rate = ((total_tests/population) * 100)
+
+
+    if death_rate > high_death_ratio:
+        state_worst_death = state
+        high_death_ratio = death_rate
+    
+    if death_rate < low_death_ratio:
+        state_best_death = state
+        low_death_ratio = death_rate
+
+    if test_rate > high_test_ratio:
+        state_best_test = state 
+        high_test_ratio = test_rate
+    
+    if test_rate < low_test_ratio:
+        state_worst_test = state
+        low_test_ratio = test_rate
+
+
+    print(f'The State with the Worst Death Rate is: {state_worst_death}')
+    print(f'Death Rate: {high_death_ratio}%')
+    print()
+    print()
+    print(f'State with the best death rate: {state_best_death}')
+    print(f'Death Rate: {low_death_ratio}%')
+    print()
+    print()
+    print(f'State with the worst test rate: {state_worst_test}')
+    print(f'Test Rate: {low_test_ratio}%')
+    print()
+    print()
+    print(f'State with the best test rate: {state_best_test}')
+    print(f'Test Rate: {high_test_ratio}')
+
+    ''' 
+    print(f"State: {state}")
+    print(f'COVID Death Rate: {death_rate}')
+    print(f'COVID Testing Rate: {test_rate}')
+
+    '''
+    '''
+
+    print(f'State: {state}')
+    print(f'Total Cases: {total_cases}')
+    print(f'Total Deaths: {total_deaths}')
+    print(f'Total Tests: {total_tests}')
+    print(f'Population: {population}')
+
+    ''' 
+
+    
+    
 
 
 #SOME USEFUL FUNCTIONS IN BEAUTIFULSOUP
